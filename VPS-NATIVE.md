@@ -94,12 +94,17 @@ Steps: run the two `git` lines from Option A first (Coolify only mounts the fold
 not create it), then create the resource above. Update = the same `git pull`. No redeploy, no
 image build, no Dockerfile, no `mkdir` bug, ~4 MB of RAM while running.
 
-If you prefer the whole thing described in git instead of in the Coolify UI: **New Resource →
-Docker Compose → repository `BENETHNGOSWE/EPIC-SEA-CARGO`, branch `deploy`, Compose location
-`docker-compose.yml`** - that file already contains the two mounts above and sets nothing else.
-Coolify reads it and runs `docker compose up`, again with no build. If the domain then refuses
-to route, the compose needs its Traefik labels spelled out; ask me and I will add them to that
-file rather than have you guess in the UI.
+**This is the branch Coolify users should take** (Build Pack dropdown: choose **Docker
+Compose**, not Nixpacks / Static / Dockerfile - the first two run a build, the last one is the
+`Dockerfile location` field that fails on a folder like this). New Resource → Deploy from Git →
+repository `BENETHNGOSWE/EPIC-SEA-CARGO` → **branch `deploy`** → Build Pack **Docker Compose** →
+Compose location `docker-compose.yml`. That file carries the two mounts above, joins the
+`coolify` network and ships its own Traefik labels for `epicseacargo.com` + `www` with
+`certresolver=letsencrypt`, so **leave Coolify's Domains field empty** - filling it in creates a
+second router for the same host. No `ports:` key either, on purpose: publishing 80 would collide
+with Coolify's proxy. Requires Server → Proxy → Let's Encrypt to have an email set, or the
+certificate request stalls. Again: no build step, nothing to compile, and `git pull` is the only
+update.
 
 ---
 
