@@ -60,8 +60,8 @@ fi
 
 fetch_files() {
     if [ -d "$DIR/.git" ]; then
-        run git -C "$DIR" fetch --depth 1 origin "$BRANCH"
-        run git -C "$DIR" reset --hard "origin/$BRANCH"
+        run $SUDO git -C "$DIR" fetch --depth 1 origin "$BRANCH"
+        run $SUDO git -C "$DIR" reset --hard "origin/$BRANCH"
         return
     fi
     # A bind mount whose host path is missing makes Docker create it - as empty directories,
@@ -103,7 +103,7 @@ printf '  site: %s files, %s\n' "$($DRY && echo '?' || find "$DIR" -type f -not 
 if $FILES_ONLY; then
     say "done - files only. Nothing else to configure:"
     echo "  Coolify -> your application -> Deploy (or Restart). The compose bind-mounts $DIR."
-    echo "  Update the site later:  $0 --files-only"
+    echo "  Update the site later:  sudo bash $0 --files-only"
     exit 0
 fi
 
@@ -174,4 +174,5 @@ if ! $DRY; then
     echo "  then: curl -sI https://${DOMAIN}/ | grep -iE 'HTTP|cache-control'"
 fi
 echo
-echo "  Updating the site later is one command:  git -C ${DIR} fetch --depth 1 origin ${BRANCH} && git -C ${DIR} reset --hard origin/${BRANCH}"
+echo "  Updating the site later is one command (the folder is root-owned, so use sudo):"
+echo "    sudo git -C ${DIR} fetch --depth 1 origin ${BRANCH} && sudo git -C ${DIR} reset --hard origin/${BRANCH}"
