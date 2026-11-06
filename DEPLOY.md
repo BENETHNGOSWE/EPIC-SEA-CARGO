@@ -21,6 +21,18 @@ Coolify: New Resource → this repo → **branch `deploy`** → Build Pack **Doc
 `.`) → add the domain. Do not build `main`: its root is a theme mirror and nothing in it is
 servable as a site.
 
+## Pruned 2026-11-06
+
+`prune_mirror.py` removed 466 files / 10.4 MB the site never touches (WooCommerce storefront,
+blog and portfolio demos, the `wp-json` dumps, 353 zero-byte stubs, 36 stray `index*.html` the
+crawler captured). What stays is decided by reading the pages, not by hand: the 4 built pages,
+the 17 mirror pages `build_site.py` lifts sections from, the pages we may build next
+(`faq`, `our-team`, `our-history`, `how-we-work`, `pricing`, `service/*`), the 44 theme files
+those pages load and the brand artwork. Proof it removed nothing that matters: after the
+prune, `build_site.py` + `export_site.py` reproduced `dist/` byte-for-byte identical (101 files,
+same SHA-256) and `check_pages.py` still says ALL CLEAN. Any file can come back:
+`git checkout -- .` or see `prune-removed.txt` for the list.
+
 `dist/` itself is a generated folder — it does not have to survive on any one machine, because
 `python3 export_site.py` rebuilds it and `python3 check_pages.py` proves the pages are whole.
 
