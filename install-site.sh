@@ -4,6 +4,8 @@
 #   curl -sO https://raw.githubusercontent.com/BENETHNGOSWE/EPIC-SEA-CARGO/main/install-site.sh
 #   bash install-site.sh --dry-run          # read-only: shows every step
 #   bash install-site.sh                    # does it, asks before touching ports/other apps
+#   bash install-site.sh --files-only       # only the site folder + checks (for Coolify users:
+#                                           # this is the prerequisite the compose expects)
 #
 # Safe to re-run: it pulls instead of cloning, and only rewrites its own server block.
 # Options: --domain other.com   --dir /var/www/other   --branch deploy   --force (no prompts)
@@ -13,11 +15,12 @@ DOMAIN="epicseacargo.com"
 DIR="/var/www/epic"
 BRANCH="deploy"
 REPO="https://github.com/BENETHNGOSWE/EPIC-SEA-CARGO.git"
-DRY=false FORCE=false
+DRY=false FORCE=false FILES_ONLY=false
 while [ $# -gt 0 ]; do
     case "$1" in
         --dry-run) DRY=true ;;
         --force)   FORCE=true ;;
+        --files-only) FILES_ONLY=true ;;
         --domain)  DOMAIN="$2"; shift ;;
         --dir)     DIR="$2"; shift ;;
         --branch)  BRANCH="$2"; shift ;;
@@ -34,7 +37,9 @@ say "1/6  checking the box"
 for c in git curl; do
     command -v "$c" >/dev/null 2>&1 || { echo "  missing: $c"; $DRY || { $FORCE && SUDO="sudo"; run apt-get update -qq; run apt-get install -y -qq git curl nginx; }; }
 done
-command -v nginx >/dev/null 2>&1 || { echo "  nginx is not installed"; $DRY || run apt-get install -y -qq nginx; }
+if ! $FILES_ONLY; then
+    command -v nginx >/dev/null 2>&1 || { echo "  nginx is not installed"; $DRY || run apt-get install -y -qq nginx; }
+fi
 NGXV=$(command -v nginx >/dev/null 2>&1 && nginx -v 2>&1 | cut -d/ -f2 || echo "not installed yet")
 echo "  git $(git --version | awk '{print $3}') · nginx ${NGXV}"
 
@@ -53,18 +58,54 @@ else
     echo "  free"
 fi
 
-say "3/6  the files"
-if [ -d "$DIR/.git" ]; then
-    run git -C "$DIR" fetch --depth 1 origin "$BRANCH"
-    run git -C "$DIR" reset --hard "origin/$BRANCH"
-else
+fetch_files() {
+    if [ -d "$DIR/.git" ]; then
+        run git -C "$DIR" fetch --depth 1 origin "$BRANCH"
+        run git -C "$DIR" reset --hard "origin/$BRANCH"
+        return
+    fi
+    # A bind mount whose host path is missing makes Docker create it - as empty directories,
+    # including a DIRECTORY named nginx.conf, which then cannot be mounted onto a file. That
+    # stub is the only thing this removes, and only when it is provably empty.
+    if [ -e "$DIR" ] && [ -z "$(find "$DIR" -mindepth 1 ! -path "$DIR/nginx.conf" ! -path "$DIR/nginx.conf/*" 2>/dev/null)" ]; then
+        if [ -d "$DIR/nginx.conf" ] && [ -z "$(ls -A "$DIR/nginx.conf")" ]; then
+            echo "  removing the empty stub Docker created at $DIR"
+            run $SUDO rm -rf "$DIR"
+        fi
+    elif [ -e "$DIR" ]; then
+        echo "  !! $DIR exists, is not a git checkout, and holds files this script did not create:"
+        find "$DIR" -maxdepth 2 | sed "s|^|     |" | head -20
+        echo "  Move it away or pass --dir /var/www/other. Nothing was deleted."
+        exit 1
+    fi
     run $SUDO mkdir -p "$(dirname "$DIR")"
     run $SUDO git clone --depth 1 -b "$BRANCH" "$REPO" "$DIR"
-fi
+}
+
+say "3/6  the files"
+fetch_files
 for f in index.html 404.html about/index.html our-services/index.html contact-us/index.html; do
     $DRY || [ -s "$DIR/$f" ] || { echo "  !! $DIR/$f is missing or empty - aborting"; exit 1; }
 done
+if ! $DRY; then
+    # the two things the compose bind-mounts: a folder and a FILE (a dir here is the failure you
+    # get when Docker auto-creates a missing host path)
+    [ -d "$DIR" ] || { echo "  !! $DIR is not a directory"; exit 1; }
+    if [ -d "$DIR/nginx.conf" ]; then
+        echo "  !! $DIR/nginx.conf is a DIRECTORY - that is the mount error. Delete $DIR and re-run."
+        exit 1
+    fi
+    [ -f "$DIR/nginx.conf" ] || { echo "  !! $DIR/nginx.conf missing"; exit 1; }
+    echo "  mounts ok: $(find "$DIR" -maxdepth 1 -type d | wc -l) dirs · $(du -sh "$DIR" | cut -f1), nginx.conf is a file"
+fi
 printf '  site: %s files, %s\n' "$($DRY && echo '?' || find "$DIR" -type f -not -path '*/.git/*' | wc -l)" "$($DRY && echo '?' || du -sh "$DIR" | cut -f1)"
+
+if $FILES_ONLY; then
+    say "done - files only. Nothing else to configure:"
+    echo "  Coolify -> your application -> Deploy (or Restart). The compose bind-mounts $DIR."
+    echo "  Update the site later:  $0 --files-only"
+    exit 0
+fi
 
 say "4/6  nginx server block -> $CONF"
 if $DRY; then
