@@ -123,9 +123,6 @@ def refs(path, root, is_html):
 
 
 def main():
-    for name in ("Dockerfile", "nginx.conf", "docker-compose.yml"):
-        if not os.path.exists(os.path.join(ROOT, name)):
-            sys.exit(f"  {name} is missing from the repo root - the export needs it")
     if os.path.isdir(DIST):
         shutil.rmtree(DIST)
     os.makedirs(DIST)
@@ -198,8 +195,6 @@ def main():
         for _folder, dest in PAGES:
             f.write(f"  <url><loc>{SITE}/" + (dest + "/" if dest else "") + "</loc></url>\n")
         f.write("</urlset>\n")
-    for name in ("Dockerfile", "nginx.conf", "docker-compose.yml"):
-        shutil.copy2(os.path.join(ROOT, name), os.path.join(DIST, name))
 
     bad = []
     for dirpath, _dirs, files in os.walk(DIST):

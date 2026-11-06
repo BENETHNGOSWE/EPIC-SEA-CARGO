@@ -29,7 +29,7 @@ SOURCES = ["index.html", "home-02/index.html", "home-04/index.html", "about-us/i
 # pages we have discussed building: kept so their sections can be lifted later
 FUTURE = ["faq", "our-team", "how-we-work", "our-history", "pricing", "service"]
 KEEP_FILES = ["build_site.py", "brand_assets.py", "export_site.py", "check_pages.py",
-              "serve.py", "prune_mirror.py", "Dockerfile", "nginx.conf", "DEPLOY.md",
+              "serve.py", "prune_mirror.py", "DEPLOY.md",
               "README.md", "robots.txt", "sitemap.xml", ".gitignore", "prune-removed.txt"]
 BRAND = "wp-content/uploads/brand"
 NEVER = {".git", "dist", "__pycache__", ".arena", ".cache", "node_modules"}

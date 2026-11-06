@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# install-site.sh - serve the site with the VPS's own nginx. No Docker, no image, no build.
+# install-site.sh - the whole deployment. Plain nginx from apt, this repo's files on disk.
+# Nothing else is required: no Docker, no container, no image, no build step, no Coolify.
 #
 #   curl -sO https://raw.githubusercontent.com/BENETHNGOSWE/EPIC-SEA-CARGO/main/install-site.sh
 #   bash install-site.sh --dry-run          # read-only: shows every step
@@ -47,11 +48,10 @@ say "2/6  who owns ports 80 and 443"
 OWNERS="$($SUDO ss -ltnp 2>/dev/null | grep -E ':(80|443)[[:space:]]' || true)"
 if [ -n "$OWNERS" ]; then
     echo "$OWNERS" | sed 's/^/  /'
-    if echo "$OWNERS" | grep -qiE 'docker-proxy|traefik|envoy'; then
-        echo "  >> a container proxy (Coolify/Traefik) is holding those ports."
-        echo "  >> nginx cannot bind 80 while that is true. Either free them in Coolify"
-        echo "  >> (Server -> Proxy) or keep Coolify and use the bind-mount option in"
-        echo "  >> VPS-NATIVE.md instead of this script."
+    if echo "$OWNERS" | grep -qiE 'docker-proxy|traefik|envoy|apache'; then
+        echo "  >> something else is already answering on 80/443, so nginx cannot bind them."
+        echo "  >> That process must go (or move to another port) before this site can own the"
+        echo "  >> domain. Name of the owner is in the lines above; nothing was changed."
         $FORCE || { printf '  continue anyway? [y/N] '; read -r a; [ "$a" = y ] || exit 1; }
     fi
 else
@@ -88,22 +88,16 @@ for f in index.html 404.html about/index.html our-services/index.html contact-us
     $DRY || [ -s "$DIR/$f" ] || { echo "  !! $DIR/$f is missing or empty - aborting"; exit 1; }
 done
 if ! $DRY; then
-    # the two things the compose bind-mounts: a folder and a FILE (a dir here is the failure you
-    # get when Docker auto-creates a missing host path)
     [ -d "$DIR" ] || { echo "  !! $DIR is not a directory"; exit 1; }
-    if [ -d "$DIR/nginx.conf" ]; then
-        echo "  !! $DIR/nginx.conf is a DIRECTORY - that is the mount error. Delete $DIR and re-run."
-        exit 1
-    fi
-    [ -f "$DIR/nginx.conf" ] || { echo "  !! $DIR/nginx.conf missing"; exit 1; }
-    echo "  mounts ok: $(find "$DIR" -maxdepth 1 -type d | wc -l) dirs · $(du -sh "$DIR" | cut -f1), nginx.conf is a file"
+    [ -s "$DIR/wp-content/uploads/brand/logo.webp" ] || echo "  note: no logo.webp yet (brand assets not rebuilt?)"
+    echo "  webroot ok: $(find "$DIR" -maxdepth 1 -type d | wc -l) dirs · $(du -sh "$DIR" | cut -f1)"
 fi
 printf '  site: %s files, %s\n' "$($DRY && echo '?' || find "$DIR" -type f -not -path '*/.git/*' | wc -l)" "$($DRY && echo '?' || du -sh "$DIR" | cut -f1)"
 
 if $FILES_ONLY; then
     say "done - files only. Nothing else to configure:"
-    echo "  Coolify -> your application -> Deploy (or Restart). The compose bind-mounts $DIR."
-    echo "  Update the site later:  sudo bash $0 --files-only"
+    echo "  Files are in place. Re-run the script (without --files-only) to write the nginx block,"
+    echo "  or use this for content changes only:  sudo bash $0 --files-only"
     exit 0
 fi
 
@@ -111,7 +105,7 @@ say "4/6  nginx server block -> $CONF"
 if $DRY; then
     echo "  would write: root $DIR, gzip, 1-year immutable cache on assets, /about -> /about/,"
     echo "  no-cache html + nosniff/X-Frame-Options/Referrer-Policy, error_page 404 -> /404.html,"
-    echo "  404 for .git/, Dockerfile, nginx.conf, docker-compose.yml"
+    echo "  404 for dotfiles (.git) and for the script itself"
 else
     if [ -f "$CONF" ] && ! grep -q "epic-site managed block" "$CONF"; then
         echo "  !! $CONF already exists and is not ours; leaving it alone"; exit 1
@@ -125,8 +119,8 @@ server {
     root ${DIR};
     index index.html;
 
-    location ~ /\.git  { return 404; }
-    location ~ ^/(Dockerfile|nginx\.conf|docker-compose\.ya?ml|VPS-NATIVE\.md|install-site\.sh)$ { return 404; }
+    location ~ /\. { return 404; }          # .git and anything else hidden in the web root
+    location = /install-site.sh { return 404; }
 
     gzip on;
     gzip_types text/css application/javascript image/svg+xml text/plain application/xml;
