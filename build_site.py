@@ -159,7 +159,7 @@ NAV_MAP = {  # mirror page → folder we build it in
     "../services/index.html": "our-services", "services/index.html": "our-services",
     "../contact/index.html": "contact-us", "contact/index.html": "contact-us",
 }
-STAGES = ("lift → menu → contact → weight → deps → demo-wiring → fonts/images/forms "
+STAGES = ("lift → menu → contact → weight → deps → demo-wiring → fonts/images/forms → wire_forms "
           "→ brand/rates → guard")
 # the mirror's 0-byte stubs: the theme asks for these, HTTrack never fetched them
 FA_DIR  = "wp-content/themes/frexus/assets/fonts"
@@ -749,6 +749,140 @@ def footer_debris(out):
     if n:
         gone.append(f"{n} nested link(s) flattened")
     return out, gone
+
+
+# ---------------------------------------------------------------- quote desk
+# The demo's Contact Form 7 block posts to a WordPress that is not here: `action="#"`, so a
+# visitor could fill in a shipment request, press Submit, and nothing at all would happen. A
+# static site has no inbox to hand it to. So the form composes the email itself - same fields,
+# same look, browser mail client - and if the machine has no mail app the text is handed over
+# ready to copy, so an enquiry is never silently lost.
+QUOTE_HINT = ("Commodity, ready date, origin port, destination, FCL or LCL, weight / volume / "
+              "dimensions, incoterm, and whether you need clearance")
+QUOTE_LABELS_JS = ("{\"your-name\": \"Name\", \"your-email\": \"Email\", \"your-subject\": \"Subject\", "
+                   "\"your-phone\": \"Phone\", \"your-message\": \"Shipment details\"}")
+QUOTE_NOTE = r"""<div class="epic-quote-note" style="margin-top:14px">
+<p style="margin:0 0 8px;font-size:13px;opacity:.75">Submitting opens your mail app with this request typed out for you. Nothing is stored or sent from the site itself.</p>
+<p style="margin:0;font-size:13px;opacity:.75">Prefer to write it yourself: <a href="mailto:@@TO@@">@@TO@@</a></p>
+<p class="epic-quote-status" role="alert" style="margin:0 0 6px;font-size:13px;color:#A3002B"></p>
+<div class="epic-quote-copy" hidden style="margin-top:10px">
+<textarea class="form-control" rows="7" readonly aria-label="The request text, ready to copy" style="font-size:13px"></textarea>
+<button type="button" class="btn btn-primary btn-sm" style="margin-top:6px">Copy text</button>
+</div>
+</div>"""
+QUOTE_SCRIPT = r"""<script>
+(function () {
+  "use strict";
+  var LABELS = @@LABELS@@;
+  function name(n) { return LABELS[n] || n.replace(/^your-/, "").replace(/[-_]/g, " "); }
+  function text(el) { return (el.value || "").replace(/^\s+|\s+$/g, ""); }
+  function wire(f) {
+    var host = (f.closest && f.closest(".wpcf7")) || f,
+        say = host.querySelector("[role=status]"),
+        vis = f.querySelector(".epic-quote-status"),
+        copy = f.querySelector(".epic-quote-copy"),
+        ta = f.querySelector(".epic-quote-copy textarea"),
+        btn = f.querySelector(".epic-quote-copy button");
+    function tell(msg) { if (say) { say.textContent = msg; } if (vis) { vis.textContent = msg; } }
+    tell("");
+    f.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var els = f.querySelectorAll("input,textarea,select"), data = {}, miss = [], i, el, n;
+      for (i = 0; i < els.length; i++) {
+        el = els[i]; n = el.getAttribute("name");
+        if (!n || /^_/.test(n) || el.disabled) { continue; }
+        data[n] = text(el);
+        if (!el.hasAttribute("required")) { continue; }
+        el.setAttribute("aria-invalid", data[n] ? "false" : "true");
+        if (!data[n]) { miss.push(name(n)); }
+      }
+      if (miss.length) { tell("Please add: " + miss.join(", ")); return; }
+      var k, lines = [];
+      for (k in data) {
+        if (Object.prototype.hasOwnProperty.call(data, k) && data[k]) { lines.push(name(k) + ": " + data[k]); }
+      }
+      var body = lines.join("\n") + "\n\nSent from " + location.hostname + location.pathname;
+      var to = f.getAttribute("data-mailto") || "";
+      window.location.href = "mailto:" + to + "?subject=" +
+        encodeURIComponent("Quote request - " + (data["your-name"] || "website enquiry")) +
+        "&body=" + encodeURIComponent(body);
+      tell("Your mail app should open with this ready to send.");
+      window.setTimeout(function () {
+        if (document.hidden || !copy || !ta) { return; }
+        copy.hidden = false; ta.value = body;
+        try { ta.select(); } catch (e) {}
+        tell("No mail app opened - the request is selected below. Copy it to " + to + ".");
+      }, 700);
+    });
+    if (btn) {
+      btn.addEventListener("click", function () {
+        if (!ta) { return; }
+        ta.select();
+        try {
+          if (navigator.clipboard) { navigator.clipboard.writeText(ta.value); } else { document.execCommand("copy"); }
+          btn.textContent = "Copied";
+        } catch (e) { btn.textContent = "Press Ctrl+C"; }
+      });
+    }
+  }
+  function start() {
+    var fs = document.querySelectorAll("form.epic-quote"), i;
+    for (i = 0; i < fs.length; i++) { wire(fs[i]); }
+  }
+  if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", start); } else { start(); }
+})();
+</script>"""
+
+
+def wire_forms(out, folder):
+    """Retarget every Contact Form 7 block on the page to the mail client. Returns (html, forms)."""
+    if 'class="wpcf7-form init"' not in out:
+        return out, 0
+    # WordPress plumbing: it would arrive in the mail body as _wpcf7=1276 noise
+    out = re.sub(r'[ \t]*<fieldset class="hidden-fields-container">[\s\S]*?</fieldset>', "", out)
+    n = [0]
+
+    def opentag(_m):
+        n[0] += 1
+        fid = "quote-" + (folder or "home").replace("_", "-") + "-" + str(n[0])
+        return ('<form id="' + fid + '" action="mailto:' + EMAIL_PLACE + '" method="post" '
+                'enctype="text/plain" accept-charset="utf-8" data-mailto="' + EMAIL_PLACE + '" '
+                'class="wpcf7-form init epic-quote" aria-label="Quote request" '
+                'novalidate="novalidate" data-status="init">')
+
+    out = re.sub(r'<form\b[^>]*class="wpcf7-form init"[^>]*>', opentag, out)
+    # required, natively: the no-JS mailto fallback then enforces the same rules we do
+    out = re.sub(r'<(input|textarea)\b([^>]*?)class="([^"]*wpcf7-validates-as-required[^"]*)"',
+                 lambda m: "<" + m.group(1) + m.group(2) + 'class="' + m.group(3) + '" required', out)
+    out = re.sub(r'<span class="wpcf7-form-control-wrap" data-name="([a-z-]+)">\s*<(input|textarea)\b',
+                 lambda m: ('<span class="wpcf7-form-control-wrap" data-name="' + m.group(1) + '">'
+                            + '<' + m.group(2) + ' id="epic-' + m.group(1) + '"'), out)
+    out = re.sub(r'<p><label>([^<]+?)\s*<span class="quform-required">\*</span></label>\s*</p>\s*'
+                 r'(<div class="quform-input">\s*<p><span class="wpcf7-form-control-wrap" '
+                 r'data-name="([a-z-]+)">)',
+                 lambda m: ('<p><label for="epic-' + m.group(3) + '">' + m.group(1).strip()
+                            + ' <span class="quform-required">*</span></label></p>' + m.group(2)), out)
+    # the demo's phone box was a *number* input, which refuses "+255 711 000 111": the browser
+    # simply submits an empty string, so a client typing their number would appear to have left
+    # it out. tel takes digits, spaces, + and - and brings up the right keyboard on a phone.
+    out = re.sub(r'(<input id="epic-your-phone")([^>]*?)\s*type="number"', r'\1\2 type="tel"', out)
+    out = out.replace('class="wpcf7-form-control wpcf7-number wpcf7-validates-as-number form-control" '
+                      'aria-invalid="false" placeholder="Phone number"',
+                      'class="wpcf7-form-control wpcf7-tel form-control" aria-invalid="false" '
+                      'placeholder="Phone number"')
+    for demo, ours in (('placeholder="Your name here"', 'placeholder="Full name"'),
+                       ('placeholder="Your email here"', 'placeholder="Email address"'),
+                       ('placeholder="Your phone number here"', 'placeholder="Phone number"')):
+        out = out.replace(demo, ours)
+    out = out.replace('<textarea id="epic-your-message"',
+                      '<textarea id="epic-your-message" placeholder="' + QUOTE_HINT + '"')
+    note = QUOTE_NOTE.replace("@@TO@@", EMAIL_PLACE)
+    out = re.sub(r'(<form\b[^>]*class="wpcf7-form init epic-quote"[\s\S]*?)</form>',
+                 lambda m: m.group(1) + note + "</form>", out)
+    script = QUOTE_SCRIPT.replace("@@LABELS@@", QUOTE_LABELS_JS)
+    if 'class="wpcf7-form init epic-quote"' in out and script not in out:
+        out = out.replace("</body>", script + "\n</body>", 1)
+    return out, n[0]
 
 
 def drop_dangling_links(out, folder):
@@ -1397,6 +1531,7 @@ def build_page(folder, spec, shared):
     elif nnet:
         print(f"  copy: {nnet} social link(s) pointed at your handles")
     out = apply_copy(out, COPY_USED)
+    out, nquote = wire_forms(out, folder)
     out, ndang, nstrip = drop_dangling_links(out, folder)
     if ndang or nstrip:
         print(f"  links: {ndang} dangling link(s) sent to the contact desk, "
@@ -1409,6 +1544,8 @@ def build_page(folder, spec, shared):
         print(f"  copy: {nstat} animated counter(s) turned into facts (nothing invented)")
     if debris:
         print("  copy: removed " + ", ".join(debris))
+    if nquote:
+        print(f"  forms: {nquote} quote form(s) wired to the mail client (no server here to send to)")
     # ---- guard: refuse to write a page with broken dependencies
     need = {"jquery": "jquery.minf43b", "jquery-migrate": "jquery-migrate.min",
             "bootstrap": "bootstrap.min.js", "theme main.js": "mainf488.js",

@@ -257,9 +257,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 							<div class="elementor-shortcode">
 <div class="wpcf7 no-js" id="wpcf7-f1276-p6265-o1" lang="en-US" dir="ltr" data-wpcf7-id="1276">
 <div class="screen-reader-response"><p role="status" aria-live="polite" aria-atomic="true"></p> <ul></ul></div>
-<form action="#" method="post" class="wpcf7-form init" aria-label="Contact form" novalidate="novalidate" data-status="init">
-<fieldset class="hidden-fields-container"><input type="hidden" name="_wpcf7" value="1276" /><input type="hidden" name="_wpcf7_version" value="6.1.7" /><input type="hidden" name="_wpcf7_locale" value="en_US" /><input type="hidden" name="_wpcf7_unit_tag" value="wpcf7-f1276-p6265-o1" /><input type="hidden" name="_wpcf7_container_post" value="6265" /><input type="hidden" name="_wpcf7_posted_data_hash" value="" />
-</fieldset>
+<form id="quote-contact-us-1" action="mailto:info@epicseacargo.com" method="post" enctype="text/plain" accept-charset="utf-8" data-mailto="info@epicseacargo.com" class="wpcf7-form init epic-quote" aria-label="Quote request" novalidate="novalidate" data-status="init">
+
 <div class="quform">
 	<div class="quform-elements">
 		<div class="row">
@@ -267,10 +266,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Your Name -->
 			<div class="col-md-6">
 				<div class="quform-element form-group">
-					<p><label>Your Name <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-name"><input size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" aria-required="true" aria-invalid="false" placeholder="Your name here" value="" type="text" name="your-name" /></span>
+					<p><label for="epic-your-name">Your Name <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-name"><input id="epic-your-name" size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" required aria-required="true" aria-invalid="false" placeholder="Full name" value="" type="text" name="your-name" /></span>
 						</p>
 					</div>
 				</div>
@@ -279,10 +276,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Your Email -->
 			<div class="col-md-6">
 				<div class="quform-element form-group">
-					<p><label>Your Email <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-email"><input size="40" maxlength="400" class="wpcf7-form-control wpcf7-email wpcf7-validates-as-required wpcf7-text wpcf7-validates-as-email form-control" aria-required="true" aria-invalid="false" placeholder="Your email here" value="" type="email" name="your-email" /></span>
+					<p><label for="epic-your-email">Your Email <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-email"><input id="epic-your-email" size="40" maxlength="400" class="wpcf7-form-control wpcf7-email wpcf7-validates-as-required wpcf7-text wpcf7-validates-as-email form-control" required aria-required="true" aria-invalid="false" placeholder="Email address" value="" type="email" name="your-email" /></span>
 						</p>
 					</div>
 				</div>
@@ -291,10 +286,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Your Subject -->
 			<div class="col-md-6">
 				<div class="quform-element form-group">
-					<p><label>Your Subject <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-subject"><input size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" aria-required="true" aria-invalid="false" placeholder="Your subject here" value="" type="text" name="your-subject" /></span>
+					<p><label for="epic-your-subject">Your Subject <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-subject"><input id="epic-your-subject" size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" required aria-required="true" aria-invalid="false" placeholder="Your subject here" value="" type="text" name="your-subject" /></span>
 						</p>
 					</div>
 				</div>
@@ -306,7 +299,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 					<p><label>Contact Number</label>
 					</p>
 					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-phone"><input class="wpcf7-form-control wpcf7-number wpcf7-validates-as-number form-control" aria-invalid="false" placeholder="Your phone number here" value="" type="number" name="your-phone" /></span>
+						<p><span class="wpcf7-form-control-wrap" data-name="your-phone"><input id="epic-your-phone" class="wpcf7-form-control wpcf7-number wpcf7-validates-as-number form-control" aria-invalid="false" placeholder="Phone number" value="" type="tel" name="your-phone" /></span>
 						</p>
 					</div>
 				</div>
@@ -315,10 +308,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Message -->
 			<div class="col-md-12">
 				<div class="quform-element form-group">
-					<p><label>Message <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-message"><textarea cols="40" rows="5" maxlength="2000" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required form-control" aria-required="true" aria-invalid="false" placeholder="Tell us a few words" name="your-message"></textarea></span>
+					<p><label for="epic-your-message">Message <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-message"><textarea id="epic-your-message" placeholder="Commodity, ready date, origin port, destination, FCL or LCL, weight / volume / dimensions, incoterm, and whether you need clearance" cols="40" rows="5" maxlength="2000" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required form-control" required aria-required="true" aria-invalid="false" placeholder="Tell us a few words" name="your-message"></textarea></span>
 						</p>
 					</div>
 				</div>
@@ -334,7 +325,15 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 		</div>
 	</div>
 </div><div class="wpcf7-response-output" aria-hidden="true"></div>
-</form>
+<div class="epic-quote-note" style="margin-top:14px">
+<p style="margin:0 0 8px;font-size:13px;opacity:.75">Submitting opens your mail app with this request typed out for you. Nothing is stored or sent from the site itself.</p>
+<p style="margin:0;font-size:13px;opacity:.75">Prefer to write it yourself: <a href="mailto:info@epicseacargo.com">info@epicseacargo.com</a></p>
+<p class="epic-quote-status" role="alert" style="margin:0 0 6px;font-size:13px;color:#A3002B"></p>
+<div class="epic-quote-copy" hidden style="margin-top:10px">
+<textarea class="form-control" rows="7" readonly aria-label="The request text, ready to copy" style="font-size:13px"></textarea>
+<button type="button" class="btn btn-primary btn-sm" style="margin-top:6px">Copy text</button>
+</div>
+</div></form>
 </div>
 </div>
 						</div>
@@ -456,9 +455,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 							<div class="elementor-shortcode">
 <div class="wpcf7 no-js" id="wpcf7-f1276-p2887-o1" lang="en-US" dir="ltr" data-wpcf7-id="1276">
 <div class="screen-reader-response"><p role="status" aria-live="polite" aria-atomic="true"></p> <ul></ul></div>
-<form action="#" method="post" class="wpcf7-form init" aria-label="Contact form" novalidate="novalidate" data-status="init">
-<fieldset class="hidden-fields-container"><input type="hidden" name="_wpcf7" value="1276" /><input type="hidden" name="_wpcf7_version" value="6.1.7" /><input type="hidden" name="_wpcf7_locale" value="en_US" /><input type="hidden" name="_wpcf7_unit_tag" value="wpcf7-f1276-p2887-o1" /><input type="hidden" name="_wpcf7_container_post" value="2887" /><input type="hidden" name="_wpcf7_posted_data_hash" value="" />
-</fieldset>
+<form id="quote-contact-us-2" action="mailto:info@epicseacargo.com" method="post" enctype="text/plain" accept-charset="utf-8" data-mailto="info@epicseacargo.com" class="wpcf7-form init epic-quote" aria-label="Quote request" novalidate="novalidate" data-status="init">
+
 <div class="quform">
 	<div class="quform-elements">
 		<div class="row">
@@ -466,10 +464,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Your Name -->
 			<div class="col-md-6">
 				<div class="quform-element form-group">
-					<p><label>Your Name <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-name"><input size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" aria-required="true" aria-invalid="false" placeholder="Your name here" value="" type="text" name="your-name" /></span>
+					<p><label for="epic-your-name">Your Name <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-name"><input id="epic-your-name" size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" required aria-required="true" aria-invalid="false" placeholder="Full name" value="" type="text" name="your-name" /></span>
 						</p>
 					</div>
 				</div>
@@ -478,10 +474,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Your Email -->
 			<div class="col-md-6">
 				<div class="quform-element form-group">
-					<p><label>Your Email <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-email"><input size="40" maxlength="400" class="wpcf7-form-control wpcf7-email wpcf7-validates-as-required wpcf7-text wpcf7-validates-as-email form-control" aria-required="true" aria-invalid="false" placeholder="Your email here" value="" type="email" name="your-email" /></span>
+					<p><label for="epic-your-email">Your Email <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-email"><input id="epic-your-email" size="40" maxlength="400" class="wpcf7-form-control wpcf7-email wpcf7-validates-as-required wpcf7-text wpcf7-validates-as-email form-control" required aria-required="true" aria-invalid="false" placeholder="Email address" value="" type="email" name="your-email" /></span>
 						</p>
 					</div>
 				</div>
@@ -490,10 +484,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Your Subject -->
 			<div class="col-md-6">
 				<div class="quform-element form-group">
-					<p><label>Your Subject <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-subject"><input size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" aria-required="true" aria-invalid="false" placeholder="Your subject here" value="" type="text" name="your-subject" /></span>
+					<p><label for="epic-your-subject">Your Subject <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-subject"><input id="epic-your-subject" size="40" maxlength="400" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required form-control" required aria-required="true" aria-invalid="false" placeholder="Your subject here" value="" type="text" name="your-subject" /></span>
 						</p>
 					</div>
 				</div>
@@ -505,7 +497,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 					<p><label>Contact Number</label>
 					</p>
 					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-phone"><input class="wpcf7-form-control wpcf7-number wpcf7-validates-as-number form-control" aria-invalid="false" placeholder="Your phone number here" value="" type="number" name="your-phone" /></span>
+						<p><span class="wpcf7-form-control-wrap" data-name="your-phone"><input id="epic-your-phone" class="wpcf7-form-control wpcf7-number wpcf7-validates-as-number form-control" aria-invalid="false" placeholder="Phone number" value="" type="tel" name="your-phone" /></span>
 						</p>
 					</div>
 				</div>
@@ -514,10 +506,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
  <!-- Message -->
 			<div class="col-md-12">
 				<div class="quform-element form-group">
-					<p><label>Message <span class="quform-required">*</span></label>
-					</p>
-					<div class="quform-input">
-						<p><span class="wpcf7-form-control-wrap" data-name="your-message"><textarea cols="40" rows="5" maxlength="2000" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required form-control" aria-required="true" aria-invalid="false" placeholder="Tell us a few words" name="your-message"></textarea></span>
+					<p><label for="epic-your-message">Message <span class="quform-required">*</span></label></p><div class="quform-input">
+						<p><span class="wpcf7-form-control-wrap" data-name="your-message"><textarea id="epic-your-message" placeholder="Commodity, ready date, origin port, destination, FCL or LCL, weight / volume / dimensions, incoterm, and whether you need clearance" cols="40" rows="5" maxlength="2000" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required form-control" required aria-required="true" aria-invalid="false" placeholder="Tell us a few words" name="your-message"></textarea></span>
 						</p>
 					</div>
 				</div>
@@ -533,7 +523,15 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 		</div>
 	</div>
 </div><div class="wpcf7-response-output" aria-hidden="true"></div>
-</form>
+<div class="epic-quote-note" style="margin-top:14px">
+<p style="margin:0 0 8px;font-size:13px;opacity:.75">Submitting opens your mail app with this request typed out for you. Nothing is stored or sent from the site itself.</p>
+<p style="margin:0;font-size:13px;opacity:.75">Prefer to write it yourself: <a href="mailto:info@epicseacargo.com">info@epicseacargo.com</a></p>
+<p class="epic-quote-status" role="alert" style="margin:0 0 6px;font-size:13px;color:#A3002B"></p>
+<div class="epic-quote-copy" hidden style="margin-top:10px">
+<textarea class="form-control" rows="7" readonly aria-label="The request text, ready to copy" style="font-size:13px"></textarea>
+<button type="button" class="btn btn-primary btn-sm" style="margin-top:6px">Copy text</button>
+</div>
+</div></form>
 </div>
 </div>
 						</div>
@@ -709,5 +707,67 @@ document.querySelectorAll('form').forEach(function(f){
     n.textContent='Your mail app is opening with these details. If nothing happened, send them to us on WhatsApp.';
     f.appendChild(n);});});})();</script>
 
+<script>
+(function () {
+  "use strict";
+  var LABELS = {"your-name": "Name", "your-email": "Email", "your-subject": "Subject", "your-phone": "Phone", "your-message": "Shipment details"};
+  function name(n) { return LABELS[n] || n.replace(/^your-/, "").replace(/[-_]/g, " "); }
+  function text(el) { return (el.value || "").replace(/^\s+|\s+$/g, ""); }
+  function wire(f) {
+    var host = (f.closest && f.closest(".wpcf7")) || f,
+        say = host.querySelector("[role=status]"),
+        vis = f.querySelector(".epic-quote-status"),
+        copy = f.querySelector(".epic-quote-copy"),
+        ta = f.querySelector(".epic-quote-copy textarea"),
+        btn = f.querySelector(".epic-quote-copy button");
+    function tell(msg) { if (say) { say.textContent = msg; } if (vis) { vis.textContent = msg; } }
+    tell("");
+    f.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var els = f.querySelectorAll("input,textarea,select"), data = {}, miss = [], i, el, n;
+      for (i = 0; i < els.length; i++) {
+        el = els[i]; n = el.getAttribute("name");
+        if (!n || /^_/.test(n) || el.disabled) { continue; }
+        data[n] = text(el);
+        if (!el.hasAttribute("required")) { continue; }
+        el.setAttribute("aria-invalid", data[n] ? "false" : "true");
+        if (!data[n]) { miss.push(name(n)); }
+      }
+      if (miss.length) { tell("Please add: " + miss.join(", ")); return; }
+      var k, lines = [];
+      for (k in data) {
+        if (Object.prototype.hasOwnProperty.call(data, k) && data[k]) { lines.push(name(k) + ": " + data[k]); }
+      }
+      var body = lines.join("\n") + "\n\nSent from " + location.hostname + location.pathname;
+      var to = f.getAttribute("data-mailto") || "";
+      window.location.href = "mailto:" + to + "?subject=" +
+        encodeURIComponent("Quote request - " + (data["your-name"] || "website enquiry")) +
+        "&body=" + encodeURIComponent(body);
+      tell("Your mail app should open with this ready to send.");
+      window.setTimeout(function () {
+        if (document.hidden || !copy || !ta) { return; }
+        copy.hidden = false; ta.value = body;
+        try { ta.select(); } catch (e) {}
+        tell("No mail app opened - the request is selected below. Copy it to " + to + ".");
+      }, 700);
+    });
+    if (btn) {
+      btn.addEventListener("click", function () {
+        if (!ta) { return; }
+        ta.select();
+        try {
+          if (navigator.clipboard) { navigator.clipboard.writeText(ta.value); } else { document.execCommand("copy"); }
+          btn.textContent = "Copied";
+        } catch (e) { btn.textContent = "Press Ctrl+C"; }
+      });
+    }
+  }
+  function start() {
+    var fs = document.querySelectorAll("form.epic-quote"), i;
+    for (i = 0; i < fs.length; i++) { wire(fs[i]); }
+  }
+  if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", start); } else { start(); }
+})();
+</script>
 </body>
 </html>
