@@ -5,7 +5,7 @@ Two branches, and they are not the same thing:
 | branch | what it is | who uses it |
 |---|---|---|
 | **`deploy`** (default) | **the website**: 99 plain files — HTML, CSS, images, favicon, `robots.txt`, `sitemap.xml`. This is what visitors get. No WordPress, no PHP, no container files. | your server pulls this |
-| `main` | the workshop: the page builder, the static exporter, the checker, the brand assets, and the demo pages sections were lifted from | only for changing the site |
+| `main` | the workshop: the page builder, the static exporter, the checker, the brand assets, and the demo pages sections were lifted from. Its root `index.html`/`404.html` are a copy of the built site, so even a wrong-branch checkout shows your homepage instead of the theme demo | only for changing the site |
 
 So if you open the repository and see `index.html`, `about/`, `our-services/`, `contact-us/`,
 `wp-content/` and nothing else — that is correct. The build scripts and the deploy script are on

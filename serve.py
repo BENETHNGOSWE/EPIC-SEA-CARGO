@@ -8,14 +8,9 @@ import http.server, socketserver, os, sys, functools
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8090
-LANDING = "/epic-home/"
+LANDING = "/"          # the repo root now holds the built home page, same as the live server
 
 class Handler(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        if self.path in ("/", "/index.php"):
-            self.send_response(302); self.send_header("Location", LANDING)
-            self.end_headers(); return
-        return super().do_GET()
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")   # always show the latest build
         super().end_headers()

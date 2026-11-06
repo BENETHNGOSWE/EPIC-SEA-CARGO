@@ -47,6 +47,8 @@ python3 export_site.py     # -> dist/ : every href/src/srcset/url() re-based, se
 python3 check_pages.py     # audit over a local preview server (serve.py, port 8090)
 ```
 
+`export_site.py` also copies the verified `index.html`, `404.html`, `robots.txt` and `sitemap.xml` to this branch's root (`mirror_root`) - the mirror's own home page lives in `home-01/`, which is what `build_site.py` reads - so serving `main` by mistake can no longer publish the vendor's demo page.
+
 Then push `dist/` to branch **`deploy`** and the VPS pulls it. `deploy` contains the site and
 nothing else - 99 files, no container config, no theme source, no PHP.
 

@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://epicseacargo.com/</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://epicseacargo.com/about/</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://epicseacargo.com/our-services/</loc>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://epicseacargo.com/contact-us/</loc>
-    <changefreq>monthly</changefreq>
-  </url>
+  <url><loc>https://epicseacargo.com/</loc></url>
+  <url><loc>https://epicseacargo.com/about/</loc></url>
+  <url><loc>https://epicseacargo.com/our-services/</loc></url>
+  <url><loc>https://epicseacargo.com/contact-us/</loc></url>
 </urlset>

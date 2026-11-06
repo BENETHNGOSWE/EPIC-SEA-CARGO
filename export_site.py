@@ -122,6 +122,25 @@ def refs(path, root, is_html):
     return keep
 
 
+def mirror_root():
+    """Copy the verified home page and error page to the repository root.
+
+    The mirror's own home page lives in home-01/ (that is what the builder reads), so the root of
+    this branch can hold the real website instead. It means a server that ends up pointing at the
+    SOURCE branch still shows Epic Sea Cargo rather than the theme's demo page. Only ever runs on
+    an artifact that has just passed the self-check above.
+    """
+    moved = []
+    for f in ("index.html", "404.html", "robots.txt", "sitemap.xml"):
+        src = os.path.join(DIST, f)
+        if os.path.isfile(src):
+            shutil.copy2(src, os.path.join(ROOT, f))
+            moved.append(f)
+    if moved:
+        print("  mirrored to the source root (so a wrong-branch checkout still shows your site): "
+              + ", ".join(moved))
+
+
 def main():
     if os.path.isdir(DIST):
         shutil.rmtree(DIST)
@@ -223,6 +242,7 @@ def main():
             print("     ! " + b)
         sys.exit(1)
     print("  ✓ dist/ is self-contained: every href, src, srcset, icon meta and url() resolves inside it")
+    mirror_root()
 
 
 if __name__ == "__main__":

@@ -28,7 +28,10 @@ HOME    = "epic-home"                         # folder of the homepage
 # ------------------------------------------------------------------ sources
 # key          (file in the mirror,            Elementor page id, folder depth)
 SOURCES = {
-    "home-01":  ("index.html",           "6085",  0),
+    # depth is how the fragment's OWN links were written, not where the file sits: HTTrack put
+    # this page at the mirror root with root-relative links, and moving the file into home-01/
+    # (so the web root can hold the built site instead of the demo) does not rewrite them.
+    "home-01":  ("home-01/index.html",   "6085",  0),
     "home-02":  ("home-02/index.html",   "6265",  1),
     "home-04":  ("home-04/index.html",   "29829", 1),
     "about-us": ("about-us/index.html",  "4899",  1),

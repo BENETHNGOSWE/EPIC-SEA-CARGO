@@ -24,7 +24,7 @@ DRY = "--apply" not in sys.argv
 
 BUILT = ["epic-home", "about", "our-services", "contact-us"]
 # what build_site.py reads, kept in step with its SOURCES table
-SOURCES = ["index.html", "home-02/index.html", "home-04/index.html", "about-us/index.html",
+SOURCES = ["home-01/index.html", "home-02/index.html", "home-04/index.html", "about-us/index.html",
            "services/index.html", "contact/index.html"]
 # pages we have discussed building: kept so their sections can be lifted later
 FUTURE = ["faq", "our-team", "how-we-work", "our-history", "pricing", "service"]
