@@ -131,6 +131,7 @@ server {
 
     location ~ /\. { return 404; }          # .git and anything else hidden in the web root
     location = /install-site.sh { return 404; }
+    location = /README.md { return 404; }     # the repo's front page is not a web page
 
     gzip on;
     gzip_types text/css application/javascript image/svg+xml text/plain application/xml;
