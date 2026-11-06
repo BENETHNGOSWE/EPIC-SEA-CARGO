@@ -61,7 +61,8 @@ fi
 fetch_files() {
     if [ -d "$DIR/.git" ]; then
         run $SUDO git -C "$DIR" fetch --depth 1 origin "$BRANCH"
-        run $SUDO git -C "$DIR" reset --hard "origin/$BRANCH"
+        run $SUDO git -C "$DIR" checkout -q -B "$BRANCH" FETCH_HEAD
+        run $SUDO git -C "$DIR" reset --hard FETCH_HEAD
         return
     fi
     # A bind mount whose host path is missing makes Docker create it - as empty directories,
@@ -90,6 +91,15 @@ done
 if ! $DRY; then
     [ -d "$DIR" ] || { echo "  !! $DIR is not a directory"; exit 1; }
     [ -s "$DIR/wp-content/uploads/brand/logo.webp" ] || echo "  note: no logo.webp yet (brand assets not rebuilt?)"
+    TITLE=$(sed -n 's@.*<title>\([^<]*\)</title>.*@\1@p' "$DIR/index.html" | head -1)
+    case "$TITLE" in
+      "Epic Sea Cargo"*) echo "  page title ok: ${TITLE:0:58}" ;;
+      *) echo "  !! $DIR/index.html is: ${TITLE:0:64}"
+         echo "  !! That is not your site - it is the theme demo (branch main is the mirror)."
+         echo "  !! Serve branch $BRANCH instead: sudo git -C $DIR fetch --depth 1 origin $BRANCH \\"
+         echo "       && sudo git -C $DIR checkout -B $BRANCH FETCH_HEAD && sudo git -C $DIR reset --hard FETCH_HEAD"
+         exit 1 ;;
+    esac
     echo "  webroot ok: $(find "$DIR" -maxdepth 1 -type d | wc -l) dirs · $(du -sh "$DIR" | cut -f1)"
 fi
 printf '  site: %s files, %s\n' "$($DRY && echo '?' || find "$DIR" -type f -not -path '*/.git/*' | wc -l)" "$($DRY && echo '?' || du -sh "$DIR" | cut -f1)"
@@ -156,6 +166,11 @@ if ! $DRY; then
     code=$(curl -s -o /dev/null -w '%{http_code}' -H "Host: ${DOMAIN}" http://127.0.0.1/ || echo 000)
     leak=$(curl -s -o /dev/null -w '%{http_code}' -H "Host: ${DOMAIN}" http://127.0.0.1/nginx.conf || echo 000)
     n404=$(curl -s -o /dev/null -w '%{http_code}' -H "Host: ${DOMAIN}" http://127.0.0.1/no-such-page || echo 000)
+    SERVED=$(curl -s -m 5 -H "Host: ${DOMAIN}" http://127.0.0.1/ | sed -n 's@.*<title>\([^<]*\)</title>.*@\1@p' | head -1)
+    case "$SERVED" in
+      "Epic Sea Cargo"*) echo "  visitors get: ${SERVED:0:58}" ;;
+      *) echo "  !! nginx is serving: ${SERVED:-nothing} - NOT your page. Check root= in $CONF" ; exit 1 ;;
+    esac
     printf '  localhost says: / -> %s (want 200) · /nginx.conf -> %s (want 404) · /no-such-page -> %s (want 404)\n' "$code" "$leak" "$n404"
     [ "$code" = 200 ] || echo "  !! not serving yet - if 000, nginx is not bound to :80 (see step 2)"
 fi
