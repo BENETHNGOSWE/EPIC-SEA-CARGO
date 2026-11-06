@@ -1,0 +1,22 @@
+# Plain nginx serving a folder. No image build, no PHP, no WordPress, nothing to compile.
+#
+# The site lives on GitHub as a plain folder of files (branch `deploy`), checked out on the
+# VPS at /var/www/epic. Updating the site is `git pull` - no redeploy, no rebuild, no cache.
+#
+# Coolify: New Resource -> Docker Compose -> Empty -> paste this file -> set the domain to
+# epicseacargo.com + www.epicseacargo.com on port 80.
+services:
+  web:
+    image: nginx:1.27-alpine
+    container_name: epic-site
+    restart: unless-stopped
+    ports:
+      - "80"
+    volumes:
+      - /var/www/epic:/usr/share/nginx/html:ro
+      - /var/www/epic/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
