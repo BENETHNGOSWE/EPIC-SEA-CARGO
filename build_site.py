@@ -1660,6 +1660,69 @@ def webpify_backgrounds():
               f"{' …' if len(touched) > 4 else ''})")
     else:
         print("  backgrounds: already webp")
+
+# --- the home hero photograph -------------------------------------------------------------
+HERO_ELEMENT = "01eff29"                                  # .elementor-element-01eff29, the home hero
+HERO_BG = "wp-content/uploads/brand/hero-dar-port.webp"   # our own photo, kept beside the logo
+
+
+def hero_background():
+    """Point the home hero at the real Port of Dar es Salaam instead of the demo render.
+
+    banner-04.webp is a generic harbour picture that came with the theme, and this is a Dar es Salaam
+    desk, so the background has to be the port as it actually looks. The photo lives in
+    uploads/brand/ next to the logo because that is where every non-theme asset already sits - which
+    also means no published page depends on a theme image any more.
+
+    Two rules keep this honest. Only the hero container's own declaration is edited, because all four
+    pages link this same stylesheet and a blind string replacement would rewrite a shared sheet rather
+    than one section. And finding nothing stops the build, because a hero that quietly kept the demo
+    photo would look fine in a log that printed nothing - that is how a swap becomes a no-op. Rule
+    bodies are matched as [^{}]* on both sides, so a match can never step over a brace and swallow
+    the rules that follow it; matches run back to front so the offsets stay valid while splicing.
+    """
+    asset = os.path.join(ROOT, HERO_BG)
+    if not os.path.exists(asset):
+        raise SystemExit("hero background: " + HERO_BG + " is missing - it is the source, commit it")
+    want = "url(\"../../brand/" + os.path.basename(HERO_BG) + "\")"
+    html = open(os.path.join(ROOT, HOME, "index.html"), encoding="utf-8", errors="ignore").read()
+    Q = chr(34) + chr(39)
+    sheets = sorted(set(re.findall("href=[" + Q + "]([^ " + Q + "]+post-[^" + Q + "]+\\.css[^" + Q + "]*)", html)))
+    rule = re.compile(r"\.elementor-element-" + HERO_ELEMENT + r"[^{}]*\{[^{}]*\}")
+    swapped = already = 0
+    for u in sheets:
+        f = os.path.normpath(os.path.join(ROOT, HOME, u.split("?")[0]))
+        if not f.endswith(".css") or not os.path.exists(f):
+            continue
+        txt = open(f, encoding="utf-8", errors="ignore").read()
+        if HERO_ELEMENT not in txt:
+            continue
+        changed = False
+        for m in reversed(list(rule.finditer(txt))):
+            open_b = txt.index("{", m.start())
+            body = txt[open_b + 1:m.end() - 1]
+            if "background-image:url(" not in body.replace(" ", ""):
+                continue
+            if "hero-dar-port" in body:
+                already += 1
+                continue
+            k = body.find("background-image")
+            s_url = body.index("url(", k)
+            e_url = body.index(")", s_url)
+            txt = txt[:open_b + 1 + k] + "background-image:" + want + txt[open_b + 1 + e_url + 1:]
+            swapped += 1
+            changed = True
+        if changed:
+            with open(f, "w", encoding="utf-8") as w:
+                w.write(txt)
+    if not swapped and not already:
+        raise SystemExit("hero background: no background-image rule for .elementor-element-"
+                         + HERO_ELEMENT + " - the theme's element id changed, update HERO_ELEMENT")
+    kb = os.path.getsize(asset) // 1024
+    note = ", " + str(already) + " already swapped" if already else ""
+    print("  hero photo:  " + os.path.relpath(asset, ROOT) + " (" + str(kb) + " KB) -> "
+          + str(swapped) + " rule(s) rewritten" + note)
+
 def main():
     missing = sorted({t for _l, t in NAV_ITEMS if t not in PAGES})
     if missing:
@@ -1676,6 +1739,7 @@ def main():
         raise SystemExit("copy map is out of date with the theme wording - fix the pairs above")
     print(f"  copy: all {len(COPY)} copy pairs applied")
     webpify_backgrounds()
+    hero_background()
     urls = "\n".join(f'  <url>\n    <loc>{SITE}/{"" if b["folder"]==HOME else b["folder"]+"/"}</loc>'
                      f'\n    <changefreq>monthly</changefreq>\n  </url>' for b in built)
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
